@@ -1,0 +1,6 @@
+artifact_location: file:///app/mlruns/640887680117301767
+creation_time: 1726686730547
+experiment_id: '640887680117301767'
+last_update_time: 1726686730547
+lifecycle_stage: active
+name: inferencia_modelo_reglog

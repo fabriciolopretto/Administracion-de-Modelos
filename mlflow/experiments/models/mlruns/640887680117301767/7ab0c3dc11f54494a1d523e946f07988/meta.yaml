@@ -1,0 +1,15 @@
+artifact_uri: file:///app/mlruns/640887680117301767/7ab0c3dc11f54494a1d523e946f07988/artifacts
+end_time: 1726686730790
+entry_point_name: ''
+experiment_id: '640887680117301767'
+lifecycle_stage: active
+run_id: 7ab0c3dc11f54494a1d523e946f07988
+run_name: Inferencia_RegLog
+run_uuid: 7ab0c3dc11f54494a1d523e946f07988
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1726686730597
+status: 4
+tags: []
+user_id: root
