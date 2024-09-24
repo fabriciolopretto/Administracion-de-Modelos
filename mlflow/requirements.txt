@@ -1,4 +1,5 @@
 mlflow
+ucimlrepo
 scikit-learn
 pandas
 numpy

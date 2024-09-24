@@ -21,3 +21,4 @@ EXPOSE 5000
 
 # Define el comando por defecto para el contenedor
 CMD ["/bin/bash"]
+
