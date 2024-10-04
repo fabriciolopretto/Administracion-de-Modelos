@@ -1,3 +1,6 @@
 airflow
 awswrangler
 ucimlrepo
+mlflow
+scikit-learn
+pandas

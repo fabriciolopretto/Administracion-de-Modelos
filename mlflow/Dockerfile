@@ -17,7 +17,7 @@ COPY experiments/models/ ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expone el puerto por defecto de MLflow
-EXPOSE 5000
+EXPOSE 5001
 
 # Define el comando por defecto para el contenedor
 CMD ["/bin/bash"]
