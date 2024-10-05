@@ -12,6 +12,7 @@ RUN apt-get update && \
 # Copia los archivos necesarios al contenedor
 COPY requirements.txt ./
 COPY experiments/models/ ./
+COPY experiments/data/ ./
 
 # Instala las dependencias
 RUN pip install --no-cache-dir -r requirements.txt

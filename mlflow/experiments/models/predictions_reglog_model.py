@@ -71,7 +71,7 @@ with mlflow.start_run(run_name="Inferencia_RegLog", tags={"proyecto": "prueba_in
     run_id = "dc3711c11565409aa77077dcdc1d5f4b"
         
     # Carga el modelo
-    model_uri = model_uri = f'runs:/{run_id}/artefactos_extra'
+    model_uri = f'runs:/{run_id}/artefactos_extra'
     reg_log_model = mlflow.sklearn.load_model(model_uri=model_uri)
 
     # Realiza predicciones

@@ -5,3 +5,4 @@ numpy
 matplotlib
 sqlalchemy
 psycopg2-binary
+seaborn
