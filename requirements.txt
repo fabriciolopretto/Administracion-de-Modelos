@@ -1,0 +1,8 @@
+mlflow
+scikit-learn
+pandas
+matplotlib
+apache-airflow
+seaborn
+psycopg2-binary
+datetime
