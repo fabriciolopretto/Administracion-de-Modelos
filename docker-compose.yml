@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: admin
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  airflow-webserver:
+    image: apache/airflow:2.6.3
+    container_name: airflow-webserver
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+      - _AIRFLOW_WWW_USER_USERNAME=admin
+      - _AIRFLOW_WWW_USER_PASSWORD=admin
+    volumes:
+      - ./dags:/opt
+      - ./scripts:/opt
+      - ./airflow/dags:/opt
+    ports:
+      - "8080:8080"
+    command: >
+      bash -c "airflow db init && airflow scheduler"
+    restart: always
+
+  airflow-scheduler:
+    image: apache/airflow:2.6.3
+    container_name: airflow-scheduler
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+    volumes:
+      - ./dags:/opt
+      - ./scripts:/opt
+      - ./airflow/dags:/opt
+    depends_on:
+      - airflow-webserver
+    command: >
+      bash -c "airflow db init && airflow webserver"
+    restart: always
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mlflow
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./scripts:/opt
+      - ./mlruns:/opt
+
+volumes:
+  postgres_data:
