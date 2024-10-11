@@ -1,0 +1,6 @@
+flask
+uvicorn
+requests
+fastapi
+pydantic
+typing-extensions
