@@ -53,3 +53,36 @@ for index, test_value in enumerate(test_values[:5]):
     print(f"El modelo svc predice: {svc_prediction}")
 
 print("\nSe han mostrado las predicciones para las primeras 5 entradas.")
+
+
+
+# Creamos un DataFrame con los valores de test
+test_values_df = pd.DataFrame(test_values)
+
+# Obtenemos la lista de modelos disponibles
+models = list(set().union(*[set(output.keys()) for output in model_outputs.values()]))
+
+# Agregamos las predicciones de cada modelo al DataFrame
+for model in models:
+    test_values_df[model] = [model_outputs[hash_key].get(model, 'No disponible') for hash_key in hashed_values]
+
+# Renombramos las columnas
+test_values_df.columns = [str(i) for i in range(len(test_values_df.columns) - len(models))] + models
+
+# Convertimos las predicciones a valores numéricos
+for model in models:
+    test_values_df[model] = pd.to_numeric(test_values_df[model], errors='coerce')
+
+# Creamos los scatter plots
+n_cols = 3  # Número de columnas en la cuadrícula de gráficos
+n_rows = (len(models) + n_cols - 1) // n_cols  # Número de filas necesarias
+
+plt.figure(figsize=(6*n_cols, 5*n_rows))
+
+for i, model in enumerate(models, 1):
+    plt.subplot(n_rows, n_cols, i)
+    sns.scatterplot(x="0", y="1", hue=model, data=test_values_df, palette="viridis")
+    plt.title(f"Predicciones del modelo {model}")
+
+plt.tight_layout()
+plt.show()

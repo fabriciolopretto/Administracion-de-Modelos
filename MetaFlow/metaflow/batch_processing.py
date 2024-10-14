@@ -58,7 +58,7 @@ class CombinedAndBatchProcessing(FlowSpec):
         s3 = S3(s3root="s3://amqtp/")
         self.loaded_models = {}
 
-        for model_name in ["tree", "svc"]:
+        for model_name in ["tree", "svc", "knn", "reglog"]:
             try:
                 # Obtener el archivo del modelo de S3
                 model_obj = s3.get(f"{model_name}_model.pkl")
@@ -105,7 +105,6 @@ class CombinedAndBatchProcessing(FlowSpec):
 
         data_df = pd.DataFrame(data)
 
-        print('Averche:          ',data)
         # Genera un hash para cada fila de datos
         data_df['key'] = data_df.apply(lambda row: ' '.join(map(str, row)), axis=1)
         data_df['hashed'] = data_df['key'].apply(lambda x: hashlib.sha256(x.encode()).hexdigest())

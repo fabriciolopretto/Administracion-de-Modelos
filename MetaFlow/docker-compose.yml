@@ -1,4 +1,14 @@
 services:
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_PORT: 8001
+    ports:
+      - "8001:8001"
+
 
   s3:
     restart: always
@@ -17,6 +27,27 @@ services:
     command: server /data --console-address :9001
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
+      interval: 60s
+      timeout: 20s
+      retries: 3
+
+  postgres:
+    image: postgres:latest  # Use an official PostgreSQL image instead of building
+    profiles:
+      - metaflow
+    ports:
+      - "6543:5432"
+    networks:
+      - backend
+    environment:
+      - POSTGRES_USER=${PG_USER:-metaflow}
+      - POSTGRES_PASSWORD=${PG_PASSWORD:-metaflow}
+      - POSTGRES_DB=${PG_DATABASE:-metaflow}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Use a named volume for data persistence
+      - ./dockerfiles/postgres:/docker-entrypoint-initdb.d  # Keep this for initialization scripts
+    healthcheck:
+      test: ["CMD", "pg_isready", "-p", "5432", "-U", "${PG_USER:-metaflow}"]
       interval: 60s
       timeout: 20s
       retries: 3
@@ -75,3 +106,4 @@ networks:
 volumes:
   minio_data:
   redis_data:
+  postgres_data:  

@@ -27,6 +27,12 @@ Para que levantar los servicios, desde la raíz de este repo hacer:
 ```bash
 docker compose up
 ```
+                                    
+
+```bash
+docker compose --profile metaflow up --build        
+```                                                 
+
 
 ## Ejecución Local
 
