@@ -1,0 +1,26 @@
+apiVersion: 1
+providers:
+  - name: 'Minio'
+    orgId: 1
+    folder: 'Minio'
+    type: 'file'
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    options:
+      path: /var/lib/grafana/dashboards/minio
+  - name: 'Airflow'
+    orgId: 1
+    folder: 'Airflow'
+    type: 'file'
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    options:
+      path: /var/lib/grafana/dashboards/airflow
+  - name: 'postgres'
+    orgId: 1
+    folder: 'postgres'
+    type: 'file'
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    options:
+      path: /var/lib/grafana/dashboards/postgres

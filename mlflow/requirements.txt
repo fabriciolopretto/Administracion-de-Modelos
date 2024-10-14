@@ -1,8 +1,0 @@
-mlflow
-scikit-learn
-pandas
-numpy
-matplotlib
-sqlalchemy
-psycopg2-binary
-seaborn
