@@ -64,6 +64,7 @@ class CombinedAndBatchProcessing(FlowSpec):
                 model_obj = s3.get(f"{model_name}_model.pkl")
                 with open(model_obj.path, 'rb') as f:
                     self.loaded_models[model_name] = pickle.load(f)
+                    print(self.loaded_models[model_name])
                 print(f"Loaded {model_name} model successfully from S3.")
             except Exception as e:
                 print(f"Error while loading {model_name}: {e}")
@@ -115,7 +116,9 @@ class CombinedAndBatchProcessing(FlowSpec):
             # Guarda las predicciones de ambos modelos en el diccionario
             dict_redis[row["hashed"]] = {
                 'tree': label_map.get(predictions['tree'][index]),
-                'svc': label_map.get(predictions['svc'][index])
+                'svc': label_map.get(predictions['svc'][index]),
+                'knn': label_map.get(predictions['knn'][index]),
+                'reglog': label_map.get(predictions['reglog'][index])
             }
         self.redis_data = dict_redis
 

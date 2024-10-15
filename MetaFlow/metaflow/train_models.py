@@ -190,7 +190,7 @@ class ConfusionMatrixFlow(FlowSpec):
 
         with open(model_pkl_file, 'wb') as file:  
             pickle.dump(grid_search_knn, file)
-            self.upload_to_s3(model_pkl_file, 'amqtp', model_pkl_file)
+        self.upload_to_s3(model_pkl_file, 'amqtp', model_pkl_file)
 
         self.next(self.join_models)
 
@@ -224,12 +224,12 @@ class ConfusionMatrixFlow(FlowSpec):
 
         print(f"Logistic Regression Model - Precision: {self.reglog_precision}, Recall: {self.reglog_recall}, F1 Score: {self.reglog_f1}")
 
-        # save the iris classification model as a pickle file
+        # save the reglog model as a pickle file
         model_pkl_file = "reglog_model.pkl"  
 
         with open(model_pkl_file, 'wb') as file:  
-            joblib.dump(grid_search_reglog, file)
-            self.upload_to_s3(model_pkl_file, 'amqtp', model_pkl_file)
+            pickle.dump(grid_search_reglog, file)
+        self.upload_to_s3(model_pkl_file, 'amqtp', model_pkl_file)
         self.next(self.join_models)
 
 
