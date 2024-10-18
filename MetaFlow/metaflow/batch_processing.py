@@ -104,17 +104,18 @@ class CombinedAndBatchProcessing(FlowSpec):
         label_map = {0: "Maligno", 1: "Benigno"}  # Ajusta según tus clases
 
 
-        data_df = pd.DataFrame(data)
+        # Genera las cadenas y hashes 
+        string_values = [' '.join(map(str, row)) for row in data]
+        hashed_values = [hashlib.sha256(substring.encode()).hexdigest() for substring in string_values]
 
-        # Genera un hash para cada fila de datos
-        data_df['key'] = data_df.apply(lambda row: ' '.join(map(str, row)), axis=1)
-        data_df['hashed'] = data_df['key'].apply(lambda x: hashlib.sha256(x.encode()).hexdigest())
+
+        print(hashed_values)
 
         # Preparamos los datos para ser enviados a Redis
         dict_redis = {}
-        for index, row in data_df.iterrows():
+        for index, hash_value in enumerate(hashed_values):
             # Guarda las predicciones de ambos modelos en el diccionario
-            dict_redis[row["hashed"]] = {
+            dict_redis[hash_value] = {
                 'tree': label_map.get(predictions['tree'][index]),
                 'svc': label_map.get(predictions['svc'][index]),
                 'knn': label_map.get(predictions['knn'][index]),
@@ -137,7 +138,7 @@ class CombinedAndBatchProcessing(FlowSpec):
         # Comenzamos un pipeline de Redis
         pipeline = r.pipeline()
 
-        # Se pre-ingresan los datos en Redis para ambos modelos ('tree' y 'svc')
+        # Se pre-ingresan los datos en Redis para todos los modelos
         for key, value in self.redis_data.items():
             # Guardamos los resultados de ambos modelos con sus respectivas claves
             pipeline.hset(f"predictions:{key}", mapping=value)
@@ -153,6 +154,17 @@ class CombinedAndBatchProcessing(FlowSpec):
         Paso final del flujo. Imprime un mensaje de finalización.
         """
         print("Finished processing")
+
+        import redis
+
+        print("Ingesting predictions into Redis")
+        r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+
+        # Prueba de escritura en Redis
+        r.set("test_key", "test_value")
+
+        # Recupera el valor para verificar
+        print(r.get("test_key"))
 
 if __name__ == "__main__":
     CombinedAndBatchProcessing()

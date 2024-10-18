@@ -3,6 +3,8 @@ import redis
 import hashlib
 import pandas as pd
 import pickle
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 from metaflow import FlowSpec, step, S3
 
@@ -54,8 +56,6 @@ for index, test_value in enumerate(test_values[:5]):
 
 print("\nSe han mostrado las predicciones para las primeras 5 entradas.")
 
-
-
 # Creamos un DataFrame con los valores de test
 test_values_df = pd.DataFrame(test_values)
 
@@ -85,4 +85,10 @@ for i, model in enumerate(models, 1):
     plt.title(f"Predicciones del modelo {model}")
 
 plt.tight_layout()
+plt.show()
+
+# Representemos graficamente a estos datos
+test_values_df["label"] = test_values_df[models[0]]  # Usamos el primer modelo como ejemplo para las etiquetas
+sns.scatterplot(x="0", y="1", hue="label", data=test_values_df)
+plt.title("Predicciones del modelo en los datos de prueba")
 plt.show()
