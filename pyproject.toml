@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "aprmaq2"
+version = "0.1.0"
+description = ""
+authors = ["Diego <sarinadiego@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pandas = "^2.2.2"
+awswrangler = "^3.9.1"
+mlflow = "^2.15.1"
+optuna = "^3.6.1"
+scikit-learn = "^1.5.1"
+streamlit = "^1.37.1"
+ipykernel = "^6.29.5"
+seaborn = "^0.13.2"
+requests = "^2.32.3"
+
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
