@@ -1,3 +1,8 @@
+"""
+Este script implementa un flujo de trabajo de machine learning utilizando la librería Metaflow,
+que permite el entrenamiento y la evaluación de modelos de clasificación sobre el conjunto
+de datos de cáncer de mama de scikit-learn.
+"""
 import os
 import pandas as pd
 import numpy as np
@@ -46,6 +51,16 @@ Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
 class Metric(Base):
+    """
+    Clase para representar la tabla de métricas en la base de datos.
+
+    Attributes:
+        id (int): Identificador único de la métrica.
+        model (str): Nombre del modelo.
+        precision (float): Precisión del modelo.
+        recall (float): Recall del modelo.
+        f1_score (float): F1 Score del modelo.
+    """    
     __tablename__ = 'metricas'
 
     id = Column(Integer, primary_key=True)
@@ -58,6 +73,10 @@ class Metric(Base):
 Base.metadata.create_all(engine)
 
 def check_database_connection():
+    """
+    Verifica la conexión a la base de datos.
+    Lanza una excepción si no se puede conectar.
+    """
     try:
         with engine.connect() as connection:
             print("Successfully connected to the database.")
@@ -66,14 +85,26 @@ def check_database_connection():
         raise
 
 class ConfusionMatrixFlow(FlowSpec):
-    
+    """
+    Flujo para la creación y evaluación de modelos
+    de clasificación con matrices de confusión.
+    Incluye la carga de datos, entrenamiento de modelos,
+    evaluación y almacenamiento de métricas.
+    """    
     @step
     def start(self):
+        """Paso inicial que inicia el flujo."""
         print("Starting Confusion Matrix Flow")
         self.next(self.load_and_prepare_data)
     
     @step
     def load_and_prepare_data(self):
+        """
+        Carga y prepara los datos del conjunto de datos de cáncer de mama.
+        Se divide el conjunto de datos en entrenamiento y prueba, y se
+        escalan las características.
+        También se suben los archivos CSV a S3 y se guarda el escalador.
+        """
         data = load_breast_cancer()
         # pylint: disable=no-member
         df = pd.DataFrame(data.data, columns=data.feature_names)
@@ -106,6 +137,11 @@ class ConfusionMatrixFlow(FlowSpec):
     
     @step
     def train_tree_model(self):
+        """
+        Entrena un modelo de árbol de decisión y almacena las métricas.
+        Se realiza una búsqueda de hiperparámetros con validación
+        cruzada y se almacenan las métricas del modelo entrenado.
+        """
         param_grid_tree = {
             'criterion': ['gini', 'entropy'],
             'max_depth': [None, 10, 20, 30],
@@ -136,6 +172,11 @@ class ConfusionMatrixFlow(FlowSpec):
     
     @step
     def train_svc_model(self):
+        """
+        Entrena un modelo de máquina de soporte vectorial (SVC)y almacena las métricas.
+        Se realiza una búsqueda de hiperparámetros con validación cruzada y se almacenan
+        las métricas del modelo entrenado.
+        """
         param_grid_svc = {
             'C': [0.1, 1, 10],
             'kernel': ['linear', 'rbf'],
@@ -165,6 +206,11 @@ class ConfusionMatrixFlow(FlowSpec):
 
     @step
     def train_knn_model(self):
+        """
+        Entrena un modelo de k-vecinos más cercanos (KNN) y almacena las métricas.
+        Se realiza una búsqueda de hiperparámetros con validación cruzada y se almacenan
+        las métricas del modelo entrenado.
+        """
         param_grid_knn = {
             'n_neighbors': [3, 5, 7],  # Número de vecinos
             'weights': ['uniform', 'distance'],  # Peso de los vecinos
@@ -197,6 +243,11 @@ class ConfusionMatrixFlow(FlowSpec):
       
     @step
     def train_reglog_model(self):
+        """
+        Entrena un modelo de regresión logística y almacena las métricas.
+        Se realiza una búsqueda de hiperparámetros con validación cruzada y se almacenan
+        las métricas del modelo entrenado.
+        """
         param_grid_reglog = {
         'C': [0.1, 1, 10],  # Valores de regularizacion
         'penalty': ['l2'],  # Tipo de regularizacion
@@ -235,6 +286,7 @@ class ConfusionMatrixFlow(FlowSpec):
 
     @step
     def join_models(self, inputs):
+        """Combina los resultados de los modelos entrenados y almacena las métricas en la base de datos."""
         self.models = {}
         for input in inputs:
             if hasattr(input, 'best_tree_model'):
@@ -256,6 +308,22 @@ class ConfusionMatrixFlow(FlowSpec):
     
     @step
     def evaluate(self):
+        """
+        Evalúa el rendimiento de los modelos entrenados mediante métricas de clasificación, 
+        incluyendo la matriz de confusión y la curva ROC.
+
+        Para cada modelo, se predicen las clases en el conjunto de prueba y se calculan las probabilidades
+        para la clase positiva. Luego, se generan y almacenan las visualizaciones de la matriz de confusión 
+        y la curva ROC en un bucket de S3.
+
+        Las métricas calculadas (precisión, recall, F1 y AUC) se almacenan en un diccionario para su 
+        posterior uso.
+
+        Almacena:
+            - Matrices de confusión como imágenes en S3.
+            - Curvas ROC como imágenes en S3.
+            - Métricas de evaluación en el diccionario `self.metrics`.
+        """
         self.metrics = {}
         for model_name, model in self.models.items():
             y_pred = model.predict(self.X_test_scaled)
@@ -318,6 +386,14 @@ class ConfusionMatrixFlow(FlowSpec):
     
     @step
     def store_results(self):
+        """
+        Almacena las métricas de evaluación de los modelos en una base de datos PostgreSQL.
+
+        Utiliza la sesión de SQLAlchemy para agregar las métricas (precisión, recall y F1) 
+        de cada modelo al modelo de datos `Metric`. Confirma la transacción y cierra la sesión.
+
+        Llama al siguiente paso `end`.
+        """
         print("Storing metrics in PostgreSQL and Redis")
         
         # Print the metrics again to verify they're available in this step
@@ -342,6 +418,15 @@ class ConfusionMatrixFlow(FlowSpec):
     
     @step
     def end(self):
+        """
+        Finaliza el flujo de evaluación de la matriz de confusión.
+
+        Imprime los resultados de las métricas almacenadas en la base de datos, 
+        verificando que los datos se han guardado correctamente.
+
+        Se consultan los resultados de la base de datos y se imprime la información 
+        de cada métrica almacenada.
+        """        
         print("Finished Confusion Matrix Flow")
 
         # Query to check if data was saved
@@ -357,6 +442,17 @@ class ConfusionMatrixFlow(FlowSpec):
 
 
     def upload_to_s3(self, file_name, bucket, object_name=None):
+        """
+        Sube un archivo a un bucket de Amazon S3.
+
+        Args:
+            file_name (str): Ruta del archivo a subir.
+            bucket (str): Nombre del bucket de S3.
+            object_name (str, opcional): Nombre del objeto en el bucket. Si no se proporciona, 
+                                        se utiliza `file_name` como nombre del objeto.
+
+        Captura y muestra un mensaje de error si la subida del archivo falla.
+        """        
         s3_client = boto3.client('s3')
         try:
             s3_client.upload_file(file_name, bucket, object_name or file_name)

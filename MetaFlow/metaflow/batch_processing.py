@@ -1,3 +1,9 @@
+"""
+Este script define un flujo de procesamiento de datos y modelos de aprendizaje
+automático mediante Metaflow, integrando almacenamiento en AWS S3 (MinIO),
+predicciones con varios modelos y la ingestión de resultados en Redis.
+"""
+
 import os
 import pandas as pd
 import numpy as np
@@ -22,16 +28,31 @@ os.environ['AWS_SECRET_ACCESS_KEY'] = "minio123"
 os.environ['AWS_ENDPOINT_URL_S3'] = "http://localhost:9000"
 
 class CombinedAndBatchProcessing(FlowSpec):
+    """
+    Clase que implementa un flujo para el procesamiento por lotes y 
+    la predicción usando modelos cargados desde S3, con la posibilidad 
+    de almacenar los resultados en Redis.
+    """
 
     @step
     def start(self):
+        """
+        Inicio del flujo.
+        
+        Este paso imprime un mensaje indicando el inicio del flujo y avanza a 
+        los siguientes pasos para la carga de datos y modelos.
+        """
         print("Starting Combined Model Training and Batch Processing")
         self.next(self.load_data, self.load_models)
 
     @step
     def load_data(self):
         """
-        Paso para cargar los datos de entrada de S3
+        Carga los datos desde S3 y aplica un escalador previamente entrenado.
+        
+        Este paso carga los datos de entrada desde un archivo CSV almacenado en S3 y 
+        utiliza un scaler almacenado en S3 para escalar los datos antes de 
+        procesarlos. Luego avanza al paso de procesamiento por lotes.
         """
         import pandas as pd
 
@@ -53,7 +74,11 @@ class CombinedAndBatchProcessing(FlowSpec):
     @step
     def load_models(self):
         """
-        Paso para cargar los modelos previamente entrenados desde S3.
+        Carga los modelos previamente entrenados desde S3.
+        
+        Este paso obtiene los modelos almacenados en S3, que incluyen un árbol de 
+        decisión, SVM, KNN y regresión logística. Avanza al siguiente paso para 
+        procesar los datos en lotes.
         """
         s3 = S3(s3root="s3://amqtp/")
         self.loaded_models = {}
@@ -76,7 +101,11 @@ class CombinedAndBatchProcessing(FlowSpec):
     @step
     def batch_processing(self, previous_tasks):
         """
-        Paso para realizar el procesamiento por lotes con los modelos cargados.
+        Realiza el procesamiento por lotes con los modelos cargados.
+        
+        Este paso toma los datos escalados y los utiliza para obtener predicciones 
+        de los modelos cargados previamente. Las predicciones se almacenan en un 
+        diccionario y se mapean las clases como "Maligno" o "Benigno".
         """
         import numpy as np
 
@@ -128,7 +157,10 @@ class CombinedAndBatchProcessing(FlowSpec):
     @step
     def ingest_redis(self):
         """
-        Paso para ingestar los resultados en Redis.
+        Ingresa las predicciones en Redis.
+        
+        Este paso toma los resultados del procesamiento por lotes y los almacena 
+        en Redis utilizando un pipeline para mayor eficiencia.
         """
         import redis
 
@@ -151,7 +183,10 @@ class CombinedAndBatchProcessing(FlowSpec):
     @step
     def end(self):
         """
-        Paso final del flujo. Imprime un mensaje de finalización.
+        Finaliza el flujo de procesamiento.
+        
+        Este paso imprime un mensaje indicando que el procesamiento ha terminado 
+        y realiza una prueba de escritura en Redis para verificar la conectividad.
         """
         print("Finished processing")
 
