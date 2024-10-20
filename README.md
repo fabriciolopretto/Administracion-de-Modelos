@@ -1,7 +1,7 @@
 # Ejemplo de Batch Processing
 ### AMq2 - CEIA - FIUBA
 
-##Integrantes
+## Integrantes
    - Gustavo Julian Rivas
    - Fabricio Lopretto
    - Myrna Lorena Degano
@@ -9,7 +9,7 @@
 
 ![Diagrama de servicios](https://github.com/fabriciolopretto/AMq2/tree/dev-santi/MetaFlow/redis_batch.png)
 
-##Descripción
+## Descripción
 Este proyecto demuestra un ejemplo de procesamiento por lotes (Batch Processing) utilizando Metaflow, Redis, y modelos de aprendizaje automático.
 El proyecto utiliza el conjunto de datos de cáncer de mama de Scikit-learn para entrenar varios modelos y realizar predicciones en lote.
 La implementación cuenta con una parte que funciona de forma local con Docker Compose:
