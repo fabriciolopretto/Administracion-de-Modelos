@@ -198,8 +198,7 @@ class CombinedAndBatchProcessing(FlowSpec):
         # Prueba de escritura en Redis
         r.set("test_key", "test_value")
 
-        # Recupera el valor para verificar
-        print(r.get("test_key"))
+
 
 if __name__ == "__main__":
     CombinedAndBatchProcessing()
