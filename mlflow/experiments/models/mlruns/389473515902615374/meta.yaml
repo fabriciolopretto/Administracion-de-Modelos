@@ -1,0 +1,6 @@
+artifact_location: file:///app/mlruns/389473515902615374
+creation_time: 1728143959771
+experiment_id: '389473515902615374'
+last_update_time: 1728143959771
+lifecycle_stage: active
+name: features_engineering

@@ -1,0 +1,15 @@
+artifact_uri: file:///app/mlruns/389473515902615374/5e976dbbbd21495e9f82e8807647181a/artifacts
+end_time: 1728143960172
+entry_point_name: ''
+experiment_id: '389473515902615374'
+lifecycle_stage: active
+run_id: 5e976dbbbd21495e9f82e8807647181a
+run_name: Correlations_HeatMap
+run_uuid: 5e976dbbbd21495e9f82e8807647181a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1728143959848
+status: 3
+tags: []
+user_id: root

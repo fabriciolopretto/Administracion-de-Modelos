@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1728143932233
+current_stage: Archived
+description: null
+last_updated_timestamp: 1728143932313
+name: Reg_Log
+run_id: dc3711c11565409aa77077dcdc1d5f4b
+run_link: null
+source: runs:/dc3711c11565409aa77077dcdc1d5f4b/artefactos_extra
+status: READY
+status_message: null
+storage_location: runs:/dc3711c11565409aa77077dcdc1d5f4b/artefactos_extra
+user_id: null
+version: 2
