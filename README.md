@@ -35,7 +35,7 @@ Este proyecto utiliza:
 
     3.1 **Desde el directorio raíz del Dockerfile, ejecuta desde a terminal:**
 
-        docker build -t image_models .
+        docker build -t image_name .
 
         docker run -it --name container_name -p 5000:5000 -v "$(pwd)/TP_Final/mlflow/experiments/models/mlruns:/app/mlruns" image_name
 
