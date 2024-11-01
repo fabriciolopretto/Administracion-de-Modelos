@@ -61,8 +61,8 @@ Este proyecto utiliza:
 
 ## Contiene:
 
-scprits con varios modelos de ML sobre el DataSet con datos de características a partir de imagenes de cancer de mama.
-Dockerfile
-requeriments.txt
-config.ini para base de datos postgres
-runs con artefactos
+- Scprits con varios modelos de ML sobre el DataSet con datos de características a partir de imagenes de cancer de mama.
+- Dockerfile
+- requeriments.txt
+- config.ini para base de datos postgres
+- runs con artefactos
